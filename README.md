@@ -50,7 +50,7 @@ It is required to have Kafka CLI tool installed to be able to use this environme
 `brew install kafka`
 
 ### 2. Create a test topic 
-Run the `./create_topic` script to connect to broker and create the topic with the included ACLs.
+Run the `./create_topic.sh` script to connect to broker and create the topic with the included ACLs.
 
 ### 3. Producing to the broker
 You are now able to produce messages to the topic by running:
@@ -58,7 +58,7 @@ You are now able to produce messages to the topic by running:
 `kafka-console-producer --broker-list localhost:9092 --producer.config client-properties/producer.properties --topic first-topic`
 
 > The command above assumes that the topic first-topic was created and the ACLs for producing were assigned.
-> To perform this action just run the script `create_topic`
+> To perform this action just run the script `create_topic.sh`
 
 ### 4. Consuming from the broker
 
@@ -67,7 +67,7 @@ Similarly to consumer from the topic:
 `kafka-console-consumer --bootstrap-server localhost:9092 --consumer.config client-properties/consumer.properties --group test-consumer-group --topic first-topic`
 
 > The command above assumes that the topic first-topic was created and the ACLs for producing were assigned.
-> To perform this action just run the script `create_topic`
+> To perform this action just run the script `create_topic.sh`
 
 ## Test Cases
 To best understand what audit information is logged we have created the following scenarios for you to test on your own.
