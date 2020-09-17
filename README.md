@@ -5,6 +5,14 @@ when being authorized / not authorized by the broker.
 
 **Note:** By default the audit information `authorizationInfo` is out to an internal topic. This behaviour is not suitable if you want to use something like metricbeat to index this information.
 
+## Prerequisites
+This project has a dependency on a running [Elastic stack](https://github.com/osodevops/docker-elk) We use the network created in this project to send data from filebeat to Elastic
+```console
+$ git clone git@github.com:osodevops/docker-elk.git
+$ cd docker-elk
+$ docker-compose up --build
+```
+ 
 ## Environment startup
 
 The environment deploys 1 Zookeeper and 1 Kafka broker, to start this example you can run the following:

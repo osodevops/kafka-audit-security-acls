@@ -45,7 +45,9 @@ services:
 
       KAFKA_AUTHORIZER_CLASS_NAME: io.confluent.kafka.security.authorizer.ConfluentServerAuthorizer
       KAFKA_CONFLUENT_AUTHORIZER_ACCESS_RULE_PROVIDERS: ZK_ACL
-      KAFKA_CONFLUENT_SECURITY_EVENT_LOGGER_ENABLE: "false"
+      KAFKA_CONFLUENT_SECURITY_EVENT_ROUTER_CONFIG: "{\"routes\":{\"crn:///kafka=*/group=*\":{\"consume\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"}},\"crn:///kafka=*/topic=*\":{\"produce\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"},\"consume\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"}}},\"destinations\":{\"topics\":{\"confluent-audit-log-events\":{\"retention_ms\":7776000000}}},\"default_topics\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"},\"excluded_principals\":[\"User:broker\",\"User:ANONYMOUS\"]}"
+# comment this in if you would like write audit log to file not topic.
+#      KAFKA_CONFLUENT_SECURITY_EVENT_LOGGER_ENABLE: "false"
 
       KAFKA_SUPER_USERS: "User:broker;User:admin"
       KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "false"
@@ -57,3 +59,20 @@ services:
       - ./security:/opt/security
       - ./config/kafka/log4j.properties.template:/etc/confluent/docker/log4j.properties.template
       - ./logs:/var/log/kafka/
+
+  kakfa-filebeat:
+    image: docker.elastic.co/beats/filebeat:7.9.1
+    hostname: kafka-filebeat
+    container_name: kakfa-filebeat
+    depends_on:
+      - kafka0
+    environment:
+      - KIBANA_HOST=kibana:5601
+      - ELASTICSEARCH_HOST=http://elasticsearch:9200
+    volumes:
+      - ./config/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
+
+networks:
+  default:
+    external:
+      name: docker-elk_default
