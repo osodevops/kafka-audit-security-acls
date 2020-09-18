@@ -1,6 +1,6 @@
 # Kafka Audit Security ACLs
 
-The objective of this project is to aduit (to a log file) the authorization of topics and the behavior of a client
+The objective of this project is to test [Audit Logs](https://docs.confluent.io/current/security/audit-logs.html#audit-logs) (audit topic & log files) the authorization of topics and the behavior of a client
 when being authorized / not authorized by the broker.
 
 **Note:** By default the audit information `authorizationInfo` is out to an internal topic. This behaviour is not suitable if you want to use something like metricbeat to index this information.
@@ -26,6 +26,63 @@ To stop the environment use (This will delete all volumes to avoid stale ACL con
 `docker-compose down -v`
 
 ## Default Configuration
+
+RBAC is disabled to use ACL only:
+
+```yml
+  broker:
+    environment:
+      KAFKA_AUTHORIZER_CLASS_NAME: io.confluent.kafka.security.authorizer.ConfluentServerAuthorizer
+      KAFKA_CONFLUENT_SECURITY_EVENT_LOGGER_ENABLE: "false"
+```
+
+This test has following override configuration:
+
+```yml
+  broker:
+    environment:
+      KAFKA_CONFLUENT_SECURITY_EVENT_ROUTER_CONFIG: "{\"routes\":{\"crn:///kafka=*/group=*\":{\"consume\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"}},\"crn:///kafka=*/topic=*\":{\"produce\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"},\"consume\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"}}},\"destinations\":{\"topics\":{\"confluent-audit-log-events\":{\"retention_ms\":7776000000}}},\"default_topics\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"},\"excluded_principals\":[\"User:kafka\",\"User:ANONYMOUS\"]}"
+```
+
+which is:
+
+```json
+{
+  "routes": {
+    "crn:///kafka=*/group=*": {
+      "consume": {
+        "allowed": "confluent-audit-log-events",
+        "denied": "confluent-audit-log-events"
+      }
+    },
+    "crn:///kafka=*/topic=*": {
+      "produce": {
+        "allowed": "confluent-audit-log-events",
+        "denied": "confluent-audit-log-events"
+      },
+      "consume": {
+        "allowed": "confluent-audit-log-events",
+        "denied": "confluent-audit-log-events"
+      }
+    }
+  },
+  "destinations": {
+    "topics": {
+      "confluent-audit-log-events": {
+        "retention_ms": 7776000000
+      }
+    }
+  },
+  "default_topics": {
+    "allowed": "confluent-audit-log-events",
+    "denied": "confluent-audit-log-events"
+  },
+  "excluded_principals": [
+    "User:kafka",
+    "User:ANONYMOUS"
+  ]
+}
+```
 
 The Kafka broker is configured with SASL/Plaintext authentication and Zookeeper is configured with SASL/Digest
 authentication. The brokers are adding ACLs to the Zookeeper nodes when
