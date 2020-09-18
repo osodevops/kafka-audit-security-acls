@@ -78,7 +78,7 @@ which is:
     "denied": "confluent-audit-log-events"
   },
   "excluded_principals": [
-    "User:kafka",
+    "User:broker",
     "User:ANONYMOUS"
   ]
 }
