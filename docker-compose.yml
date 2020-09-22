@@ -43,12 +43,17 @@ services:
       KAFKA_LISTENER_NAME_REPLICATION_SASL_ENABLED_MECHANISMS: PLAIN
       KAFKA_LISTENER_NAME_REPLICATION_PLAIN_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required user_broker='broker-secret' username='broker' password='broker-secret';"
 
+#Audit configuration
       KAFKA_AUTHORIZER_CLASS_NAME: io.confluent.kafka.security.authorizer.ConfluentServerAuthorizer
       KAFKA_CONFLUENT_AUTHORIZER_ACCESS_RULE_PROVIDERS: ZK_ACL
-      KAFKA_CONFLUENT_SECURITY_EVENT_ROUTER_CONFIG: "{\"routes\":{\"crn:///kafka=*/group=*\":{\"consume\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"}},\"crn:///kafka=*/topic=*\":{\"produce\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"},\"consume\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"}}},\"destinations\":{\"topics\":{\"confluent-audit-log-events\":{\"retention_ms\":7776000000}}},\"default_topics\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"},\"excluded_principals\":[\"User:broker\",\"User:ANONYMOUS\"]}"
+# Router config to capture everything including internal topics < probably not what you want.
+#     KAFKA_CONFLUENT_SECURITY_EVENT_ROUTER_CONFIG: "{\"routes\":{\"crn:///kafka=*/group=*\":{\"consume\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"}},\"crn:///kafka=*/topic=*\":{\"produce\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"},\"consume\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"}}},\"destinations\":{\"topics\":{\"confluent-audit-log-events\":{\"retention_ms\":7776000000}}},\"default_topics\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"},\"excluded_principals\":[\"User:broker\"]}"
+# Router config to capture everything excluding internal and Confluent topics
+      KAFKA_CONFLUENT_SECURITY_EVENT_ROUTER_CONFIG: "{\"routes\":{\"crn:///kafka=*/group=*\":{\"consume\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"}},\"crn:///kafka=*/topic=*\":{\"produce\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"},\"consume\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"}},\"crn:///kafka=*/topic=_*\":{\"consume\":{\"allowed\":\"\",\"denied\":\"\"},\"produce\":{\"allowed\":\"\",\"denied\":\"\"},\"other\":{\"allowed\":\"\",\"denied\":\"\"}},\"crn:///kafka=*/topic=confluent-audit-log-events*\":{\"consume\":{\"allowed\":\"\",\"denied\":\"\"},\"produce\":{\"allowed\":\"\",\"denied\":\"\"},\"other\":{\"allowed\":\"\",\"denied\":\"\"}}},\"destinations\":{\"topics\":{\"confluent-audit-log-events\":{\"retention_ms\":7776000000}}},\"default_topics\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"},\"excluded_principals\":[\"User:broker\"]}"
 # comment this in if you would like write audit log to file not topic.
 #      KAFKA_CONFLUENT_SECURITY_EVENT_LOGGER_ENABLE: "false"
 
+#User config
       KAFKA_SUPER_USERS: "User:broker;User:admin"
       KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "false"
       KAFKA_ZOOKEEPER_SET_ACL: "true"
