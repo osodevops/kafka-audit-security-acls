@@ -1,0 +1,70 @@
+//Example route config:
+// 1) Ignores audit events for audit topic: confluent-audit-log-events
+// 2) Ignores audit events for interal and Confluent specific topics
+// 3) Captures audit events on all other topics
+
+{
+  "routes": {
+    "crn:///kafka=*/group=*": {
+      "consume": {
+        "allowed": "confluent-audit-log-events",
+        "denied": "confluent-audit-log-events"
+      }
+    },
+    "crn:///kafka=*/topic=*": {
+      "produce": {
+        "allowed": "confluent-audit-log-events",
+        "denied": "confluent-audit-log-events"
+      },
+      "consume": {
+        "allowed": "confluent-audit-log-events",
+        "denied": "confluent-audit-log-events"
+      }
+    },
+    "crn:///kafka=*/topic=_*": {
+      "consume": {
+        "allowed": "",
+        "denied": ""
+      },
+      "produce": {
+        "allowed": "",
+        "denied": ""
+      },
+      "other": {
+        "allowed": "",
+        "denied": ""
+      }
+    },
+    "crn:///kafka=*/topic=confluent-audit-log-events*": {
+      "consume": {
+        "allowed": "",
+        "denied": ""
+      },
+      "produce": {
+        "allowed": "",
+        "denied": ""
+      },
+      "other": {
+        "allowed": "",
+        "denied": ""
+      }
+    }
+  },
+  "destinations": {
+    "topics": {
+      "confluent-audit-log-events": {
+        "retention_ms": 7776000000
+      }
+    }
+  },
+  "default_topics": {
+    "allowed": "confluent-audit-log-events",
+    "denied": "confluent-audit-log-events"
+  },
+  "excluded_principals": [
+    "User:broker"
+  ]
+}
+
+//Docker Env version
+//KAFKA_CONFLUENT_SECURITY_EVENT_ROUTER_CONFIG: "{\"routes\":{\"crn:///kafka=*/group=*\":{\"consume\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"}},\"crn:///kafka=*/topic=*\":{\"produce\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"},\"consume\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"}},\"crn:///kafka=*/topic=_*\":{\"consume\":{\"allowed\":\"\",\"denied\":\"\"},\"produce\":{\"allowed\":\"\",\"denied\":\"\"},\"other\":{\"allowed\":\"\",\"denied\":\"\"}},\"crn:///kafka=*/topic=confluent-audit-log-events*\":{\"consume\":{\"allowed\":\"\",\"denied\":\"\"},\"produce\":{\"allowed\":\"\",\"denied\":\"\"},\"other\":{\"allowed\":\"\",\"denied\":\"\"}}},\"destinations\":{\"topics\":{\"confluent-audit-log-events\":{\"retention_ms\":7776000000}}},\"default_topics\":{\"allowed\":\"confluent-audit-log-events\",\"denied\":\"confluent-audit-log-events\"},\"excluded_principals\":[\"User:broker\"]}"
