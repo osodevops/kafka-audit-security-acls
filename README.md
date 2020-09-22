@@ -33,7 +33,7 @@ RBAC is disabled to use ACL only:
   broker:
     environment:
       KAFKA_AUTHORIZER_CLASS_NAME: io.confluent.kafka.security.authorizer.ConfluentServerAuthorizer
-      KAFKA_CONFLUENT_SECURITY_EVENT_LOGGER_ENABLE: "false"
+      KAFKA_CONFLUENT_AUTHORIZER_ACCESS_RULE_PROVIDERS: ZK_ACL
 ```
 
 This test has following override configuration:
