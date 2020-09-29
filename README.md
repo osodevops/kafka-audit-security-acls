@@ -201,5 +201,14 @@ The commands below are executed from the directory where this repo was cloned (d
 | Expected Results | * Client will fail due to authorization error |
 | Audit Log | `[2020-09-09 19:55:15,732] Principal = User:consumer is Denied Operation = Describe from host = 192.168.16.1 on resource = Group:LITERAL:test-consumer-group` |
 
+## Useful Commands
+kafkacat is a generic non-JVM producer and consumer for Apache Kafka >=0.8, think of it as a netcat for Kafka. You can read more about kafkacat here https://github.com/edenhill/kafkacat
+```console
+$ brew install kafkacat
+######### FIND LEAD KAFKA BROKER ######### 
+$ kafkacat -L -b localhost:9092 \
+-X security.protocol=sasl_plaintext \
+-X sasl.mechanisms=PLAIN -X sasl.username=admin -X sasl.password='admin-secret'
+```
 ## Grok Parsing Patterns
 TODO!!
